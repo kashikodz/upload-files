@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+//use Faker\Provider\File;
 use Illuminate\Http\Request;
 use App\Models\fileUpload;
 use Illuminate\Support\Facades\Response;
+use ZipArchive;
+use File;
 
 class DashboardController extends Controller
 {
@@ -46,5 +49,22 @@ class DashboardController extends Controller
 //        dd($name);
         $file=public_path('/storage/uploads/'.$name);
         return Response::download($file);
+    }
+    public function downloadMultipleFiles(){
+        $files = array('kashif.png', 'new.png');
+        $zip = new ZipArchive;
+
+        $fileName = 'downloads.zip';
+
+        if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE)
+        {
+            $path = public_path('storage\uploads\\');
+            foreach ($files as $key => $value) {
+                $relativeNameInZipFile = basename($path.$value);
+                $zip->addFile($path.$value, $relativeNameInZipFile);
+            }
+            $zip->close();
+        }
+        return response()->download(public_path($fileName));
     }
 }
