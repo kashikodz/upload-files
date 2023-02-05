@@ -26,7 +26,7 @@
                                             <div class="grid grid-cols-3 gap-6">
                                                 <div class="col-span-6 sm:col-span-3">
                                                     <label for="first-name" class="block text-sm font-medium text-gray-700">File title *</label>
-                                                    <input type="text" name="name" id="first-name" autocomplete="given-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    <input type="text" name="file_name" id="first-name" autocomplete="given-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                                 </div>
                                             </div>
                                             <div>
@@ -131,7 +131,12 @@
     -->
     <div class="bg-white">
         <div class="mx-auto max-w-2xl py-16 px-4 sm:py-24 sm:px-6 lg:max-w-7xl lg:px-8">
-            <h2 class="text-2xl font-bold tracking-tight text-gray-900">All Images</h2>
+            <h2 class="text-2xl font-bold tracking-tight text-gray-900">All Images</h2></br>
+            <form id="myForm" action="{{'downloadMultipleFiles'}}" method="POST">
+                @csrf
+                <input value="" name="selected_files" class="selected_images hidden" >
+            <button type="submit" class="download_all flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Download Selected</button>
+            </form>
 
             <div class="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
                 @foreach($images as $image)
@@ -148,9 +153,13 @@
 {{--                                    {{$image->file_name}}--}}
                                 <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
                                     <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/></svg>
-                                    <span>Download</span>
+                                    <span>Download</span>&nbsp;
                                 </button>
                                 </a>
+                                <div class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+                                    <label>Select </label>&nbsp;&nbsp;&nbsp;
+                                    <input type="checkbox" name="selected" value="{{$image->file_name}}" id="selected_{{$image->file_name}}">
+                                </div>
                             </h3>
                         </div>
                     </div>
@@ -183,9 +192,39 @@
 
 
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<script>
+
+    $(document).ready(function (e) {
+        let array=[];
+        $('#myForm').submit(function() {
+            // your code here
+            $("input:checkbox[name=selected]:checked").each(function(){
+                array.push($(this).val());
+            });
+            $('.selected_images').val(array);
+            array=[]
+            return true
+        });
+        {{--$(".download_all").click(function(){--}}
 
 
+        {{--    $.ajax({--}}
+        {{--        url:'{{ url('/downloadMultipleFiles') }}',--}}
+        {{--        type:'post',--}}
+        {{--        data: {'files': array, '_token': '{{csrf_token()}}'},--}}
+        {{--        success:function (data) {--}}
+        {{--            console.log(data);--}}
+        {{--            // row.child( format(data,row) ).show();--}}
+        {{--            // tr.addClass('shown');--}}
+        {{--            // tr.find('fa-plus-circle').attr('data-icon', 'minus-circle');--}}
+        {{--        }--}}
+        {{--    });--}}
 
+        {{--console.log(array);--}}
+        {{--});--}}
+    });
+</script>
 
 
 

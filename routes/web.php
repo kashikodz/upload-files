@@ -26,7 +26,7 @@ Route::get('/', [DashboardController::class,'dashboard'])->middleware(['auth'])-
 
 Route::post('upload',[DashboardController::class ,'upload']);
 Route::get('/download_single/{id}', [DashboardController::class,'singleDownload']);
-Route::get('/downloadMultipleFiles', [DashboardController::class,'downloadMultipleFiles']);
+Route::post('/downloadMultipleFiles', [DashboardController::class,'downloadMultipleFiles']);
 
 
 

@@ -17,7 +17,7 @@ class DashboardController extends Controller
     }
     public function upload(Request $request){
         $this->validate($request, [
-            'name' => 'required',
+            'file_name' => 'required|unique:file_uploads',
             'file' => 'required',
         ]);
         if ($request->hasFile('file')) {
@@ -28,7 +28,7 @@ class DashboardController extends Controller
             $check = in_array($extension, $allowedfileExtension);
             if ($check) {
 
-                $fileName = $request->name;
+                $fileName = $request->file_name;
                 $filePath = $request->file('file')->storeAs('uploads', $fileName.'.'.$extension, 'public');
                 $fileModel = new fileUpload;
                 $fileModel->file_name = $fileName.'.'.$extension;
@@ -50,21 +50,51 @@ class DashboardController extends Controller
         $file=public_path('/storage/uploads/'.$name);
         return Response::download($file);
     }
-    public function downloadMultipleFiles(){
-        $files = array('kashif.png', 'new.png');
+
+    public function downloadMultipleFiles(Request $request){
+//        dd($request->selected_files);
+        $files = explode(',',$request->selected_files,);
+
         $zip = new ZipArchive;
 
-        $fileName = 'downloads.zip';
-
+        $fileName = 'selectedImages.zip';
+        $zip->open($fileName,ZipArchive::CREATE);
+//        dd($files);
         if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE)
         {
             $path = public_path('storage\uploads\\');
             foreach ($files as $key => $value) {
+//                dd($value);
+
                 $relativeNameInZipFile = basename($path.$value);
                 $zip->addFile($path.$value, $relativeNameInZipFile);
             }
             $zip->close();
+        return response()->download($fileName)->deleteFileAfterSend(true);;
         }
-        return response()->download(public_path($fileName));
+    }
+    public function downloadMultipleFiles_working(Request $request){
+            $zip = new ZipArchive;
+
+            $fileName = 'zipFileName.zip';
+
+            if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE)
+            {
+                // Folder files to zip and download
+                // files folder must be existing to your public folder
+                $files = File::files(public_path('storage\\uploads\\'));
+//                dd($files);
+
+                // loop the files result
+                foreach ($files as $key => $value) {
+                    $relativeNameInZipFile = basename($value);
+                    $zip->addFile($value, $relativeNameInZipFile);
+                }
+
+                $zip->close();
+            }
+
+            // Download the generated zip
+//            return response()->download(public_path($fileName));
     }
 }
